@@ -121,8 +121,16 @@
   directory, prefer an isolated worktree.
 - If the agent runtime provides built-in worktree isolation, it may be used.
   Otherwise, the agent may create a temporary worktree with
-  `git worktree add` in an ignored agent-owned directory such as
-  `.agent-state/worktrees/<name>` on a new local branch.
+  `git worktree add` in an ignored agent-owned directory under
+  `.agent-state/worktrees/` on a new local branch.
+- To avoid collisions with other concurrent agents, first ensure the
+  parent directory exists with `mkdir -p .agent-state/worktrees`, then
+  use `mktemp -d` with an informative prefix to create the worktree
+  directory, e.g.
+  `mktemp -d .agent-state/worktrees/<prefix>-XXXXXX`. Use a
+  correspondingly unique name for the local branch (perhaps derived from the
+  generated directory name). Do not use predictable static names such as a bare
+  branch name or task label.
 - These Git restrictions apply in all worktrees, including built-in isolated
   subagent worktrees.
 - Ensure agent-owned worktree directories are ignored by Git so they do not
