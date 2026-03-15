@@ -93,10 +93,14 @@
 # Workflow
 - When using Git, prefer read-only commands. Limited local-only Git writes are
   allowed when they directly support the user's task.
-- Low-risk Git state changes are limited to `git add` and
-  `git restore --staged` for explicitly named paths the agent touched,
+- Low-risk Git state changes are limited to `git restore --staged` for
+  explicitly named paths the agent previously staged with user approval,
   `git fetch <remote>` and `git remote update` to refresh remote refs, and
   constrained `git worktree` commands as described below.
+- Staging commands such as `git add` and `git stage` may be used only when
+  the user explicitly requests staging for the current task or after the
+  agent asks for approval and the user approves in a separate message. Even
+  then, stage only explicitly named paths the agent touched.
 - The higher-risk local-only operations `git commit`, `git pull --ff-only`,
   `git rebase`, `git merge`, `git cherry-pick`, and `git checkout` or
   `git switch` may be used only when the user explicitly requests that
@@ -111,7 +115,7 @@
   sufficient.
 - Never stage, commit, or modify unrelated user changes. For commands that
   accept pathspecs, always use explicit pathspecs — never use broad commands
-  such as `git add .` or `git commit -a`.
+  such as `git add .`, `git stage .`, or `git commit -a`.
 - When parallel agent work or Git operations could disturb the current working
   directory, prefer an isolated worktree.
 - If the agent runtime provides built-in worktree isolation, it may be used.
