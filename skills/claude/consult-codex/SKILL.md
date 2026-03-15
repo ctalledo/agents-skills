@@ -81,6 +81,9 @@ Call `mcp__codex__codex` with these parameters:
   `cwd` (like a filesystem root). Note that any relative paths provided in the
   context provided by `prompt` should be relative to the `cwd` that you choose.
 
+- **`config`**: `{"reasoning_effort": "xhigh"}`. Consultations warrant the
+  highest reasoning effort available.
+
 - **`sandbox`**: `"read-only"`. Codex should review and advise, not modify files
   directly. You can also emphasize this to Codex in the `prompt`.
 
@@ -128,6 +131,9 @@ the summary.
 
 - Always include the anti-circular-consultation instruction in the `prompt` text
   to prevent Codex from invoking `consult-claude` in response.
+- Always pass `config: {"reasoning_effort": "xhigh"}` to every
+  `mcp__codex__codex` call. Consultations warrant the highest reasoning
+  effort available.
 - Always set `cwd` to the most pragmatic location for Codex's review context.
 - Always construct a comprehensive, self-contained briefing for the initial
   prompt. Codex cannot read your conversation history.

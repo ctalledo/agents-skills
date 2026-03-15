@@ -103,7 +103,7 @@ PID_FILE="$(mktemp "${TMPDIR:-/tmp}/claude-pid.XXXXXX")"
 # is the authoritative record of Claude's response if your outer tool wrapper
 # fails to stream the output incrementally.
 sh -c '
-  claude -p --output-format json < "$1" > "$2" &
+  claude -p --model opus --effort high --output-format json < "$1" > "$2" &
   pid=$!
   echo "$pid" > "$3"
   wait "$pid"
@@ -187,7 +187,7 @@ OUTPUT_FILE="$(mktemp "${TMPDIR:-/tmp}/claude-output.XXXXXX")"
 PID_FILE="$(mktemp "${TMPDIR:-/tmp}/claude-pid.XXXXXX")"
 
 sh -c '
-  claude -p --resume "$1" --output-format json "$2" > "$3" &
+  claude -p --model opus --effort high --resume "$1" --output-format json "$2" > "$3" &
   pid=$!
   echo "$pid" > "$4"
   wait "$pid"
@@ -213,7 +213,7 @@ PID_FILE="$(mktemp "${TMPDIR:-/tmp}/claude-pid.XXXXXX")"
 # Run `claude` in the same working directory as used in the initial command.
 # Capture stdout to a file and record the process PID for timeout handling.
 sh -c '
-  claude -p --resume "$1" --output-format json < "$2" > "$3" &
+  claude -p --model opus --effort high --resume "$1" --output-format json < "$2" > "$3" &
   pid=$!
   echo "$pid" > "$4"
   wait "$pid"
@@ -267,6 +267,9 @@ the summary.
 - Always choose a working directory using the heuristics described above: broad
   enough to cover the relevant code in an appropriate context, not so broad as
   to be meaningless. Record it and use it consistently for all turns.
+- Always pass `--model opus --effort high` to every `claude` invocation,
+  both initial and follow-up. Consultations warrant the best model and
+  thinking level available.
 - Always use `--output-format json` so you can capture the `session_id` for
   session resumption.
 - Always use quoted one-line arguments only for short prompts. For anything
