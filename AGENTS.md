@@ -20,5 +20,12 @@ It currently has the following items:
   currently defined:
     - `skills/codex/consult-claude`: A skill that enables Codex to consult
       Claude Code for additional review, feedback, and assistance.
-    - `skills/claude/consult-codex`: A skill that enables Claude Code
-      to consult Codex for additional review, feedback, and assistance.
+    - `skills/claude/consult-codex`: A skill that enables Claude Code to
+      consult Codex for additional review, feedback, and assistance.
+    - `skills/common/drive-pr`: A skill for driving a GitHub pull request
+      toward completion by identifying blockers and executing the next
+      high-leverage follow-up work.
+    - `skills/common/fix-ci`: A skill for diagnosing and fixing failing CI
+      checks on a branch or pull request.
+    - `skills/common/review-pr`: A skill for reviewing a GitHub pull request
+      and preparing a findings-first report.
