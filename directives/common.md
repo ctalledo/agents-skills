@@ -1,5 +1,5 @@
 # Code style
-- Try to write lines less than 80 characters in length, especially for comments.
+- Try to write lines 80 characters or less in length, especially for comments.
   Exceptions can be made for comment lines or string literals that would exceed
   80 characters due to long URLs or other content. For code lines, readability
   is more important than length restrictions, so consider 100 characters a soft
@@ -111,6 +111,7 @@
   "update the repo".
 - When creating a commit, use `git commit -s` unless the user explicitly asks
   not to sign off that commit.
+- When writing Git commit messages, keep each line to 80 characters or less.
 - Prefer `git fetch <remote>` over `git remote update` when a single remote is
   sufficient.
 - Never stage, commit, or modify unrelated user changes. For commands that
