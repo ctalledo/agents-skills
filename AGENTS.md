@@ -33,6 +33,13 @@ It currently has the following items:
       Claude Code for additional review, feedback, and assistance.
     - `skills/claude/consult-codex`: A skill that enables Claude Code to
       consult Codex for additional review, feedback, and assistance.
+    - `skills/claude/review-plan-as-ceo`: A skill for reviewing an
+      implementation plan as a visionary CEO, challenging premises, mapping
+      the dream state, and performing a comprehensive 10-section technical
+      review.
+    - `skills/claude/review-plan-as-em`: A skill for reviewing an
+      implementation plan as a pragmatic engineering manager, focusing on
+      scope, architecture, code quality, tests, and performance.
     - `skills/common/drive-pr`: A skill for driving a GitHub pull request
       toward completion by identifying blockers and executing the next
       high-leverage follow-up work.
