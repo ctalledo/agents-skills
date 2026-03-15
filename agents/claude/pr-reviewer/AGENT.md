@@ -5,7 +5,7 @@ description: >-
   testing, and CI state. Returns a findings-first report with draft inline
   comments. Does not post to GitHub. Use for batch or subagent PR review
   without interactive confirmation.
-model: inherit
+model: opus
 permissionMode: bypassPermissions
 tools: [Read, Glob, Grep, Bash]
 skills:

@@ -5,7 +5,7 @@ description: >-
   autonomously: inspects check state, diagnoses root causes, applies local
   code fixes. Stops before committing or pushing. Use for one-shot or batch
   CI repair without interactive approval gates.
-model: inherit
+model: opus
 permissionMode: bypassPermissions
 tools: [Read, Glob, Grep, Bash, Edit, Write]
 maxTurns: 16
