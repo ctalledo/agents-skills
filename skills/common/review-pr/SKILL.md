@@ -21,6 +21,14 @@ The command examples below are recommended starting points, not a fixed
 recipe. Adapt them to the repository, the PR's shape, the installed tool
 versions, and any better repo-local tooling you discover.
 
+## Autonomous operation
+
+If running as an autonomous subagent, this section overrides the interactive
+approval/wait instructions in the procedure below. Skip step 5 (the posting
+confirmation step) entirely. Do not post anything to GitHub — no reviews, no
+comments, no approvals. Return the complete findings report as your final
+output.
+
 ## Procedure
 
 ### 1. Authenticate and resolve the pull request

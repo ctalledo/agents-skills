@@ -165,7 +165,9 @@ Common actions:
 #### Fix failing CI
 
 Invoke `fix-ci` when checks are failing and the problem needs diagnosis or a
-targeted repair.
+targeted repair. When the `ci-fixer` subagent is available, prefer delegating
+to it so the diagnosis and local fixes run in isolation without interrupting
+the current conversation.
 
 If `fix-ci` is unavailable, do a smaller version of that workflow
 here: inspect the failing run, identify the likely root cause, and
@@ -174,8 +176,10 @@ bring the diagnosis back to the user before changing anything.
 #### Review the PR
 
 Invoke `review-pr` when the user wants a formal review, when you need
-a findings-first assessment before acting, or when a substantial
-local fix should be self-reviewed before it is pushed.
+a findings-first assessment before acting, or when a substantial local fix
+should be self-reviewed before it is pushed. When the `pr-reviewer` subagent
+is available, prefer delegating to it so the review runs in parallel without
+blocking the main conversation.
 
 #### Address review feedback
 

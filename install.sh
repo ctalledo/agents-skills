@@ -94,6 +94,25 @@ if [ -d "${HOME}/.claude" ]; then
                 "skill: ${skill_name}"
         done
     fi
+
+    # Register Claude-specific agents. Agents are installed as individual
+    # .md files at ~/.claude/agents/<name>.md, which is what Claude Code
+    # reads. The repo keeps a directory per agent for consistency with
+    # skills and to allow future extensibility (e.g., additional assets).
+    claude_agents_src="${script_dir}/agents/claude"
+    if [ -d "$claude_agents_src" ]; then
+        mkdir -p "${HOME}/.claude/agents"
+        for agent_dir in "${claude_agents_src}"/*/; do
+            [ -d "$agent_dir" ] || continue
+            agent_name=$(basename "$agent_dir")
+            agent_md="${agent_dir}AGENT.md"
+            [ -f "$agent_md" ] || continue
+            install_link \
+                "$agent_md" \
+                "${HOME}/.claude/agents/${agent_name}.md" \
+                "agent: ${agent_name}"
+        done
+    fi
 else
     echo "Claude Code not configured."
 fi

@@ -22,6 +22,17 @@ recipe. Use other read-only commands, helper scripts, or repo-specific tooling
 when they are a better fit for the failure at hand. If you need to widen the
 investigation beyond routine read-only probing, confirm with the user first.
 
+## Autonomous operation
+
+If running as an autonomous subagent, this section overrides the interactive
+approval/wait instructions in the procedure below. Skip all approval gates:
+proceed directly from diagnosis through local code fixes without pausing to
+ask for permission. Stop before committing or pushing — do not run
+`git commit`, `git push`, or any equivalent remote-write operation.
+
+Return a structured summary of findings and changes when done (see the
+`ci-fixer` agent definition for the exact format).
+
 ## Procedure
 
 ### 1. Authenticate and resolve the target

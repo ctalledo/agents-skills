@@ -13,6 +13,17 @@ It currently has the following items:
   configuration directories as an `AGENTS.md` or `CLAUDE.md` file (depending on
   the agent in question). It contains code style guidelines and basic workflow
   guidelines that are appropriate across projects.
+- `agents`: This directory contains subagent definitions for agents that
+  support autonomous (non-interactive) operation. Currently only Claude Code
+  subagents are defined, under `agents/claude`. Each agent has its own
+  subdirectory containing an `AGENT.md` file with frontmatter (name,
+  description, model, permissionMode, skills) and a system prompt body. The
+  following agents are currently defined:
+    - `agents/claude/ci-fixer`: Autonomous CI diagnosis and local fixing.
+      Applies code fixes without approval gates; stops before committing or
+      pushing.
+    - `agents/claude/pr-reviewer`: Autonomous PR review. Returns a complete
+      findings-first report without posting anything to GitHub.
 - `skills`: This directory contains skills that get symlinked into user-level
   agent skills directories. The skills are divided into those specific to Codex
   (in `skills/codex`), those specific to Claude Code (in `skills/claude`), and
