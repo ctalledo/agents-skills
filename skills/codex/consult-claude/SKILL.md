@@ -88,13 +88,29 @@ Write the briefing / prompt to a unique temporary file (generated via `mktemp`),
 then run `claude` in the chosen working directory:
 
 ```
-# Generate a unique temporary file.
-BRIEFING_FILE="$(mktemp /tmp/claude-briefing.XXXXXX.md)"
+# Generate unique temporary files. Use a template with trailing Xs so this
+# works on BSD/macOS `mktemp` as well as GNU `mktemp`.
+BRIEFING_FILE="$(mktemp "${TMPDIR:-/tmp}/claude-briefing.XXXXXX")"
+OUTPUT_FILE="$(mktemp "${TMPDIR:-/tmp}/claude-output.XXXXXX")"
+PID_FILE="$(mktemp "${TMPDIR:-/tmp}/claude-pid.XXXXXX")"
 
 # Populate "$BRIEFING_FILE" with the full briefing before running Claude.
+# Record these exact paths in your own notes or outer execution context before
+# launching Claude. You may need them while the command is still running.
 
-# Run `claude` (in the chosen working directory)
-claude -p --output-format json < "$BRIEFING_FILE"
+# Run `claude` in the background, capture its stdout to a file, and record
+# its PID so that you can enforce a timeout if needed. The saved output file
+# is the authoritative record of Claude's response if your outer tool wrapper
+# fails to stream the output incrementally.
+sh -c '
+  claude -p --output-format json < "$1" > "$2" &
+  pid=$!
+  echo "$pid" > "$3"
+  wait "$pid"
+' sh "$BRIEFING_FILE" "$OUTPUT_FILE" "$PID_FILE"
+
+# Read the saved response after the command exits.
+cat "$OUTPUT_FILE"
 ```
 
 `-p` enables non-interactive mode; the briefing file is supplied via stdin,
@@ -102,13 +118,61 @@ which avoids shell quoting issues and argument length limits entirely. Do not
 use heredocs for briefings or follow-ups. Use quoted one-line arguments for
 short prompts, and temporary files for anything longer or more structured.
 
-The JSON response will include a `session_id` field — record it for follow-up
-turns.
+The JSON response will include a `session_id` field. Record Claude's JSON
+`session_id` for follow-up turns. Do not confuse it with any process ID,
+session ID, or command handle used by your outer execution environment to
+monitor the running shell command. Those are separate concepts:
 
-**Claude may take a minute or more to respond**, especially for large or
-complex consultations. Use execution settings that allow for long-running
-commands, and poll patiently for completion rather than treating a delayed
-response as failure.
+- The outer execution environment may expose its own process or session handle
+  for polling the running command.
+- Claude's JSON `session_id` is the one used with `claude -p --resume ...`.
+
+**Claude may take a long time to respond**, especially for large or complex
+consultations. Budget up to 15 minutes of wall-clock time for an initial
+consultation by default.
+
+If your execution environment exposes a session, process handle, or similar
+handle for the running shell command, keep polling that handle while Claude is
+running. Poll more frequently during the first minute, then switch to a coarser
+poll interval such as 15-30 seconds.
+
+Assume you may see **no live stdout at all** until the process exits. In many
+execution environments, Claude will not stream visible output incrementally
+even when it is running correctly.
+
+If the process exits successfully but your outer wrapper did not show Claude's
+response live, inspect the saved output file before assuming the consultation
+failed. The saved output file is the authoritative source of the response.
+
+If the `sh -c` invocation exits non-zero and the saved output file is empty or
+unhelpful, inspect any stderr surfaced by your outer execution environment
+before retrying. Claude CLI failures may explain themselves only on stderr.
+
+If the 15 minute budget is reached, treat that as a timeout:
+
+1. Read the PID from `"$PID_FILE"`.
+2. Send `SIGINT` to request graceful shutdown.
+3. Wait a short grace period and see whether the process exits.
+4. If it does not exit, send `SIGTERM`.
+5. Inform the user that the Claude consultation timed out and proceed without
+   it.
+
+A concrete timeout sequence looks like:
+
+```sh
+CLAUDE_PID="$(cat "$PID_FILE")"
+kill -INT "$CLAUDE_PID" || true
+sleep 10
+if kill -0 "$CLAUDE_PID" 2>/dev/null; then
+  kill -TERM "$CLAUDE_PID" || true
+fi
+```
+
+If your execution environment lets you terminate the outer running shell
+command directly, prefer that over raw PID signaling. The outer execution
+environment is usually in the best position to clean up the whole command tree.
+
+Do not leave long-running Claude subprocesses orphaned after a timeout.
 
 ### 3. Iterate with follow-ups
 
@@ -118,24 +182,54 @@ in step 2 — the session is scoped to that directory, so paths in follow-up
 prompts must resolve against that same root:
 
 ```
-claude -p --resume <session_id> --output-format json "your follow-up here"
+# Even for a short one-line follow-up, still use the recoverable launch form.
+OUTPUT_FILE="$(mktemp "${TMPDIR:-/tmp}/claude-output.XXXXXX")"
+PID_FILE="$(mktemp "${TMPDIR:-/tmp}/claude-pid.XXXXXX")"
+
+sh -c '
+  claude -p --resume "$1" --output-format json "$2" > "$3" &
+  pid=$!
+  echo "$pid" > "$4"
+  wait "$pid"
+' sh "<session_id>" "your follow-up here" "$OUTPUT_FILE" "$PID_FILE"
+
+cat "$OUTPUT_FILE"
 ```
 
 For longer or more structured follow-ups, use the same temporary file / stdin
 technique as the initial call:
 
 ```
-# Generate a unique temporary file.
-FOLLOWUP_FILE="$(mktemp /tmp/claude-followup.XXXXXX.md)"
+# Generate unique temporary files using a portable BSD/macOS-safe `mktemp`
+# template with trailing Xs.
+FOLLOWUP_FILE="$(mktemp "${TMPDIR:-/tmp}/claude-followup.XXXXXX")"
+OUTPUT_FILE="$(mktemp "${TMPDIR:-/tmp}/claude-output.XXXXXX")"
+PID_FILE="$(mktemp "${TMPDIR:-/tmp}/claude-pid.XXXXXX")"
 
 # Populate "$FOLLOWUP_FILE" with the full follow-up before running Claude.
+# Record these exact paths in your own notes or outer execution context before
+# launching Claude. You may need them while the command is still running.
 
-# Run `claude` (in the same working directory as used in the initial command).
-claude -p --resume <session_id> --output-format json < "$FOLLOWUP_FILE"
+# Run `claude` in the same working directory as used in the initial command.
+# Capture stdout to a file and record the process PID for timeout handling.
+sh -c '
+  claude -p --resume "$1" --output-format json < "$2" > "$3" &
+  pid=$!
+  echo "$pid" > "$4"
+  wait "$pid"
+' sh "<session_id>" "$FOLLOWUP_FILE" "$OUTPUT_FILE" "$PID_FILE"
+
+# Read the saved response after the command exits.
+cat "$OUTPUT_FILE"
 ```
 
 Because Claude retains the full prior exchange in the resumed session, follow-up
 prompts do not need to repeat the briefing. Keep them specific and concrete.
+
+Apply the same waiting, polling, recovery, and timeout rules to follow-ups that
+you apply to the initial consultation. By default, budget up to 15 minutes of
+wall-clock time for a follow-up as well unless you have a specific reason to
+use a shorter timeout.
 
 Good follow-ups:
 
@@ -178,6 +272,9 @@ the summary.
 - Always use quoted one-line arguments only for short prompts. For anything
   longer or more structured, write the prompt to a temporary file and supply it
   via stdin. Do not use heredocs.
+- Always use portable `mktemp` templates with trailing `X`s. Do not use
+  examples like `foo.XXXXXX.md`, which are not portable to BSD/macOS
+  `mktemp`.
 - Always include the anti-circular-consultation instruction at the end of the
   initial briefing. Claude has access to its own tool set, so the prompt
   instruction is the primary guard against invoking `consult-codex`.
@@ -186,4 +283,21 @@ the summary.
   consulting session has no access to your conversation history.
 - Keep consultations focused on specific, concrete questions. Vague prompts
   produce vague feedback.
+- Always launch Claude in a recoverable and cancellable form: save stdout to an
+  output file and save the subprocess PID so that you can recover the response
+  even if live stdout is not surfaced and can terminate the subprocess if it
+  exceeds the timeout.
+- Always preserve and inspect the saved output file before deciding that a
+  consultation failed. A lack of streamed stdout is not, by itself, evidence
+  that Claude did not respond.
+- If the Claude launch exits non-zero and the saved output file is empty or
+  unhelpful, inspect stderr from the outer execution environment before
+  retrying.
+- Always distinguish Claude's JSON `session_id` from any process or session
+  identifier used by your outer execution environment.
+- Allow up to 15 minutes of wall-clock time for a Claude consultation by
+  default. If that budget is exceeded, terminate the subprocess cleanly and
+  tell the user that the consultation timed out.
+- Always clean up temporary briefing, output, and PID files after the
+  consultation completes or is abandoned and you no longer need them.
 - Escalate to the user if consensus cannot be reached within 4 turns.
