@@ -91,7 +91,60 @@
   aforementioned commenting guidelines.
 
 # Workflow
-- When using Git, don't use any commands that would change the state of the
-  repository or any associated remote repository.
+- When using Git, prefer read-only commands. Limited local-only Git writes are
+  allowed when they directly support the user's task.
+- Low-risk Git state changes are limited to `git add` and
+  `git restore --staged` for explicitly named paths the agent touched,
+  `git fetch <remote>` and `git remote update` to refresh remote refs, and
+  constrained `git worktree` commands as described below.
+- The higher-risk local-only operations `git commit`, `git pull --ff-only`,
+  `git rebase`, `git merge`, `git cherry-pick`, and `git checkout` or
+  `git switch` may be used only when the user explicitly requests that
+  specific Git operation for the current task. A plain-language request such
+  as "commit these changes", "rebase this branch on main", or
+  "check out branch foo" counts as explicit permission. Do not infer
+  permission from vague requests such as "sync the branch" or
+  "update the repo".
+- When creating a commit, use `git commit -s` unless the user explicitly asks
+  not to sign off that commit.
+- Prefer `git fetch <remote>` over `git remote update` when a single remote is
+  sufficient.
+- Never stage, commit, or modify unrelated user changes. For commands that
+  accept pathspecs, always use explicit pathspecs — never use broad commands
+  such as `git add .` or `git commit -a`.
+- When parallel agent work or Git operations could disturb the current working
+  directory, prefer an isolated worktree.
+- If the agent runtime provides built-in worktree isolation, it may be used.
+  Otherwise, the agent may create a temporary worktree with
+  `git worktree add` in an ignored agent-owned directory such as
+  `.agent-state/worktrees/<name>` on a new local branch.
+- These Git restrictions apply in all worktrees, including built-in isolated
+  subagent worktrees.
+- Ensure agent-owned worktree directories are ignored by Git so they do not
+  appear as untracked files in the main working tree.
+- Clean up agent-created temporary worktrees when they are no longer needed.
+  The agent may run `git worktree remove` only for a clean worktree it created
+  itself and only without `--force`. After removing such a worktree, the agent
+  may run `git branch -d` to delete the corresponding local temporary branch
+  when that deletion is non-destructive. If cleanup would discard changes or
+  commits, stop and ask the user.
+- Never use commands that publish, discard, rewrite, or garbage-collect
+  repository state (except through the override process below), including
+  `git push`, `git send-pack`, `git bundle`, `git gc`,
+  `git maintenance run`, `git prune`, `git repack`, `git reflog expire`,
+  `git reset`, `git clean`, `git stash`, `git branch -D`, `git restore`
+  except `git restore --staged` on explicitly named paths, or equivalent
+  lower-level commands.
+- If the user explicitly requests an operation otherwise disallowed by these
+  rules, first restate the exact operation, its likely effects, and the safer
+  alternative if one exists, then ask for confirmation. Proceed only after the
+  user confirms in a separate message. This override applies only to that
+  specific operation for the current task.
+- If a Git command would require conflict resolution, switching branches,
+  altering remotes, deleting a branch outside the non-destructive temporary
+  worktree cleanup described above, discarding changes, or prompting for
+  credentials, stop and ask the user unless the user explicitly requested that
+  specific operation. Even then, ask before taking any destructive follow-up
+  action such as forcing cleanup or discarding local changes.
 - When writing Go code, ensure that it is formatted using `go fmt` once it is
   written and functional.

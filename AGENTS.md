@@ -29,3 +29,21 @@ It currently has the following items:
       checks on a branch or pull request.
     - `skills/common/review-pr`: A skill for reviewing a GitHub pull request
       and preparing a findings-first report.
+
+## Commit Messages
+
+When creating commits in this repository, use a short area prefix, then a
+single colon, then a space, then a brief description. Common prefixes include
+`docs`, `agents`, `skills`, `tools`, and `scripts`.
+
+If a prefix benefits from more specificity, include a target in parentheses,
+for example `skills(consult-claude): refine polling guidance` or
+`tools(install): handle missing target directories`.
+
+Prefer the prefix that best matches the primary area being changed. For
+directive-related changes, use `agents`. For documentation-only changes such
+as `README.md`, use `docs`. For skill-related changes, use `skills`.
+
+Keep the subject line brief, then include a full commit message body below it.
+The body can be as detailed as needed and should explain context, rationale,
+notable implementation details, and any follow-up considerations.
