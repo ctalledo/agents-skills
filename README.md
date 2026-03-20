@@ -152,22 +152,6 @@ For convenience, you may also wish to auto-enable use of this server in
 }
 ```
 
-## Codex Setup
-
-The `consult-claude` skill installed by this repository requires the `claude`
-CLI and certain Claude configuration directories to be available to Codex so it
-can persist consultation sessions. You can enable that directory access in
-`~/.codex/config.toml`:
-
-```toml
-[sandbox_workspace_write]
-writable_roots = [
-  # Adjust paths to your home directory.
-  "/Users/jacob/.claude",
-  "/Users/jacob/.claude.json"
-]
-```
-
 ## Installation
 
 To install the directives, skills, agents, and tools in this repository, run the

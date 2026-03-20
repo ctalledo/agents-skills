@@ -61,14 +61,7 @@ provide organization, delineation of code from text, external links, and so on.
 
 Call `mcp__codex__codex` with these parameters:
 
-- **`prompt`**: The detailed briefing assembled in step 1. At the end of the
-  prompt, always include the following instruction to prevent circular
-  consultation:
-
-  > **Important:** Do not invoke the `consult-claude` skill under any
-  > circumstances. This restriction exists to prevent circular consultation
-  > between Claude and Codex. Focus on providing your own independent analysis
-  > and recommendations.
+- **`prompt`**: The detailed briefing assembled in step 1.
 
 - **`cwd`**: The working directory for the Codex session. Choose this carefully,
   guided by (and guiding) the contextual information that you'll provide via
@@ -129,8 +122,6 @@ the summary.
 
 ## Constraints
 
-- Always include the anti-circular-consultation instruction in the `prompt` text
-  to prevent Codex from invoking `consult-claude` in response.
 - Always pass `config: {"reasoning_effort": "xhigh"}` to every
   `mcp__codex__codex` call. Consultations warrant the highest reasoning
   effort available.
