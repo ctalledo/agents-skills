@@ -85,7 +85,6 @@ repository in `~/.claude/settings.json`:
 {
     "permissions": {
         "allow": [
-            "Skill(consult-codex)",
             "Skill(review-plan-as-ceo)",
             "Skill(review-plan-as-em)",
             "Skill(drive-pr)",
@@ -96,27 +95,20 @@ repository in `~/.claude/settings.json`:
 }
 ```
 
-### Codex MCP Setup
+### Codex Plugin Setup
 
-The `consult-codex` skill installed by this repository requires the Codex MCP
-server to be added to Claude Code:
+The OpenAI Codex plugin for Claude Code provides Codex integration directly
+via the plugin system. To install it, enter Claude Code and run:
 
 ```
-claude mcp add --scope user codex -- codex mcp-server
+/plugin marketplace add openai/codex-plugin-cc
+/plugin install codex@openai-codex
+/reload-plugins
+/codex:setup
 ```
 
-For convenience, you may also wish to auto-enable use of this server in
-`~/.claude/settings.json`:
-
-```json
-{
-    "permissions": {
-        "allow": [
-            "mcp__codex"
-        ]
-    }
-}
-```
+When prompted for an installation scope during `/plugin install`, choose
+"user scope".
 
 ### Chrome DevTools Plugin / MCP Setup
 

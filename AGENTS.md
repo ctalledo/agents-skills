@@ -29,8 +29,6 @@ It currently has the following items:
   (in `skills/codex`), those specific to Claude Code (in `skills/claude`), and
   those common to all agents (in `skills/common`). The following skills are
   currently defined:
-    - `skills/claude/consult-codex`: A skill that enables Claude Code to
-      consult Codex for additional review, feedback, and assistance.
     - `skills/claude/review-plan-as-ceo`: A skill for reviewing an
       implementation plan as a visionary CEO, challenging premises, mapping
       the dream state, and performing a comprehensive 10-section technical
@@ -53,7 +51,7 @@ single colon, then a space, then a brief description. Common prefixes include
 `docs`, `agents`, `skills`, `tools`, and `scripts`.
 
 If a prefix benefits from more specificity, include a target in parentheses,
-for example `skills(consult-codex): refine polling guidance` or
+for example `skills(review-pr): improve inline comment formatting` or
 `tools(install): handle missing target directories`.
 
 Prefer the prefix that best matches the primary area being changed. For
