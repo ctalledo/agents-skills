@@ -95,6 +95,20 @@ if [ -d "${HOME}/.claude" ]; then
         done
     fi
 
+    # Register procedures.
+    procedures_src="${script_dir}/procedures"
+    if [ -d "$procedures_src" ]; then
+        mkdir -p "${HOME}/.claude/procedures"
+        for procedure_md in "${procedures_src}"/*.md; do
+            [ -f "$procedure_md" ] || continue
+            procedure_name=$(basename "$procedure_md")
+            install_link \
+                "$procedure_md" \
+                "${HOME}/.claude/procedures/${procedure_name}" \
+                "procedure: ${procedure_name}"
+        done
+    fi
+
     # Register Claude-specific agents. Agents are installed as individual
     # .md files at ~/.claude/agents/<name>.md, which is what Claude Code
     # reads. The repo keeps a directory per agent for consistency with
