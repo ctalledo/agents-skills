@@ -127,9 +127,9 @@ sources:
 
 4. **Filter review requests.** Before creating a
    `pr-review` thread for a review request, verify the
-   review was requested of Jacob directly (per
+   review was requested of Cesar directly (per
    `github.user` in `config/sources.yaml`) or of one of the
-   monitored `github.teams` objects. Jacob belongs to many
+   monitored `github.teams` objects. Cesar belongs to many
    large organizational teams that generate non-actionable
    review requests. If in doubt, check the PR's requested
    reviewers:
@@ -370,7 +370,7 @@ Organize the report with these sections:
   bugs) and bypasses the wl tooling that exists for this
   purpose.
 - Never merge PRs. Never propose or suggest merging PRs.
-  Merging is only performed when Jacob explicitly requests
+  Merging is only performed when Cesar explicitly requests
   it in a separate instruction. This applies to all
   workflows that build on the sitrep, including the
   concierge.

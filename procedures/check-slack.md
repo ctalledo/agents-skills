@@ -1,7 +1,7 @@
 # Check Slack Procedure
 
 This procedure checks monitored Slack channels for new
-messages and @-mentions of Jacob. It is run as a forked
+messages and @-mentions of Cesar. It is run as a forked
 subagent by the sitrep and concierge skills.
 
 Slack integration is via the Slack MCP server plugin.
@@ -19,7 +19,7 @@ Read the channel list from `config/sources.yaml` under
 - **ai** (medium priority): AI initiative channels.
 - **general** (low priority): General Docker channels.
 
-Read Jacob's Slack user ID:
+Read Cesar's Slack user ID:
 
 ```yaml
 slack:
@@ -168,9 +168,9 @@ This step is performed only by the `slack-mentions`
 subagent. Skip it in the channel-tier subagents.
 
 In addition to reading monitored channels, run two
-searches to find messages directed at Jacob.
+searches to find messages directed at Cesar.
 
-Read Jacob's user ID from `slack.user_id` in
+Read Cesar's user ID from `slack.user_id` in
 `config/sources.yaml`.
 
 To scope both searches to recent messages, use the
@@ -197,7 +197,7 @@ searches below.
 
 ### 2a. DMs (`to:me`)
 
-Search for direct messages sent to Jacob. The `to:me`
+Search for direct messages sent to Cesar. The `to:me`
 modifier matches messages in DM conversations:
 
 ```
@@ -221,7 +221,7 @@ with the rest of the Slack check.
 
 ### 2b. @-Mentions (`<@USER_ID>`)
 
-Search for messages that @-mention Jacob. Use the user
+Search for messages that @-mention Cesar. Use the user
 ID as a **plain keyword** — do NOT use the `to:` search
 modifier, which only matches DMs and does not find
 @-mentions in channels or thread replies:
@@ -340,7 +340,7 @@ each one. Process in batches of 20–30.
 ## Step 4: Read Additional Relevant Threads
 
 If a message in a monitored channel has replies that
-seem relevant (e.g., it's a thread Jacob was mentioned
+seem relevant (e.g., it's a thread Cesar was mentioned
 in, or a thread about a topic in the worklog), read the
 thread for context:
 
@@ -354,7 +354,7 @@ mcp__plugin_slack_slack__slack_read_thread({
 
 Only do this selectively — not for every thread. Focus
 on threads that:
-- Mention Jacob directly.
+- Mention Cesar directly.
 - Relate to active worklog threads.
 - Appear to require a response or decision.
 
@@ -362,11 +362,11 @@ on threads that:
 
 ### Action Required
 
-- Direct @-mentions asking Jacob a question or requesting
+- Direct @-mentions asking Cesar a question or requesting
   input.
 - Messages in high-priority channels that require a
   response (decisions, review requests, blockers).
-- Threads where Jacob was asked to follow up.
+- Threads where Cesar was asked to follow up.
 
 ### Status Update Only
 
@@ -470,7 +470,7 @@ Recommended batching:
 
 - This procedure is read-only. It reads and classifies
   but does not mark messages as read or update any
-  cursors. Slack read-state is managed manually by Jacob.
+  cursors. Slack read-state is managed manually by Cesar.
 - All Slack interaction goes through the Slack MCP server
   plugin. There is no CLI fallback.
 - Read the channel list and user ID from
@@ -508,4 +508,4 @@ Recommended batching:
   context usage. Only escalate to `"detailed"` when
   more context is needed for classification.
 - The Slack MCP server cannot mark messages as read. That
-  is managed manually by Jacob.
+  is managed manually by Cesar.

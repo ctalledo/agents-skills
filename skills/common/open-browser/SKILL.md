@@ -1,7 +1,7 @@
 ---
 name: open-browser
 description: >-
-  Open one or more URLs in Google Chrome. Use when Jacob needs to open a PR,
+  Open one or more URLs in Google Chrome. Use when Cesar needs to open a PR,
   issue, Slack thread, or any other link in the browser. Accepts a
   space-separated or newline-separated list of URLs.
 argument-hint: "<url> [url...]"
@@ -37,10 +37,10 @@ and continue with the remaining URLs.
 
 ## Constraints
 
-- Only open URLs that Jacob explicitly referenced or that appear in worklog
+- Only open URLs that Cesar explicitly referenced or that appear in worklog
   threads and notifications. Do not open arbitrary URLs.
 - Do not open more than 10 URLs in a single invocation without confirming
-  with Jacob first.
+  with Cesar first.
 
 ## Target
 

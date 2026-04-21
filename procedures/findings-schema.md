@@ -12,7 +12,7 @@ The parent agent is the **single writer**. It alone may:
 - Advance cursors or checkpoints.
 - Commit the worklog repository.
 - Clean up notifications after the commit succeeds and
-  Jacob confirms the cleanup list.
+  Cesar confirms the cleanup list.
 
 ## Output Format
 
@@ -34,7 +34,7 @@ failures:
     error: "Slack MCP search timed out."
 action_required:
   - kind: mention
-    title: "Jacob asked to review gateway config changes"
+    title: "Cesar asked to review gateway config changes"
     summary: "Question from @teammate in #team-mcp-tools-security."
     priority_hint: high
     refs:
@@ -91,7 +91,7 @@ proposed_state_updates:
   - Linear/Jira: issues inspected.
 - `refs` use canonical worklog source-ref formats.
 - `cleanup` contains identifiers for cleanup that happens
-  **after** worklog commit and explicit Jacob approval.
+  **after** worklog commit and explicit Cesar approval.
   Cleanup lists may contain identifiers for items that have
   no corresponding finding. For example, emails from ignored
   authors are included in `cleanup.email_message_ids` even

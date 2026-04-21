@@ -7,7 +7,7 @@
 > context that complement CLAUDE.md.
 
 This document describes how to manage work threads, cursors,
-checkpoints, and worktrees in Jacob's worklog repository
+checkpoints, and worktrees in Cesar's worklog repository
 using the `wl` CLI tool. This procedure is used by the
 sitrep and concierge skills.
 
@@ -37,7 +37,7 @@ Docker workspace root. The worklog repository is at
 4. **Single writer.** Source-check subagents are read-only.
    They return proposed thread/state changes in the shared
    findings schema. The parent agent is the only writer that
-   applies `wl` mutations after Jacob approves the
+   applies `wl` mutations after Cesar approves the
    changeset.
 
 5. **Slack-source threads are watched.** Any active worklog
@@ -78,7 +78,7 @@ When checking a Slack channel:
    messages newer than the cursor timestamp.
 3. Record the **proposed** new cursor value in the findings
    schema.
-4. After Jacob approves the changeset, the parent agent
+4. After Cesar approves the changeset, the parent agent
    applies it:
    `wl state cursor set <channel-id> <newest-ts>`
 
@@ -145,7 +145,7 @@ When checking a source:
    checkpoint.
 4. Process the findings and return
    `proposed_state_updates.checkpoint = scan_started_at`.
-5. After Jacob approves the changeset and the worklog
+5. After Cesar approves the changeset and the worklog
    mutations succeed, apply the checkpoint:
    `wl state checkpoint set <source> "$scan_started_at"`
 

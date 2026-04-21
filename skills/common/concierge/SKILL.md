@@ -3,7 +3,7 @@ name: concierge
 description: >-
   Start or resume the concierge workflow. Runs a situational report across all
   notification sources, then interactively steps through action items with
-  Jacob. This is the primary entry point for daily workflow automation.
+  Cesar. This is the primary entry point for daily workflow automation.
 disable-model-invocation: true
 argument-hint: "[resume]"
 compatibility: >-
@@ -14,7 +14,7 @@ compatibility: >-
 
 # Concierge
 
-Jacob's daily workflow orchestrator. Checks notification sources, correlates
+Cesar's daily workflow orchestrator. Checks notification sources, correlates
 findings into the worklog, presents a situational report, and then
 interactively works through action items.
 
@@ -34,7 +34,7 @@ Available skills for dispatching work:
 
 The work plan and action strategies below are recommended starting points, not
 a fixed recipe. Every day looks different — adapt to the shape of the work and
-Jacob's priorities.
+Cesar's priorities.
 
 ## Modes
 
@@ -47,8 +47,8 @@ Run the full flow from Step 1 (Sitrep) through Step 3 (Work).
 Skip the sitrep and go directly to Step 2 (Plan) using the existing worklog
 state. Use this when:
 - A previous concierge session was interrupted.
-- Jacob already ran `/sitrep` separately.
-- Jacob wants to continue working through items from an earlier session.
+- Cesar already ran `/sitrep` separately.
+- Cesar wants to continue working through items from an earlier session.
 
 ## Procedure
 
@@ -101,7 +101,7 @@ Suggested groupings:
 - **Items needing input**: Docs to read, decisions to make.
 - **Deferred / monitoring**: Items with no immediate action.
 
-After presenting the plan, wait for Jacob to review and adjust. He may reorder,
+After presenting the plan, wait for Cesar to review and adjust. He may reorder,
 skip, add, or change the approach for items. He may also request that
 independent items be handled in parallel.
 
@@ -119,7 +119,7 @@ and planned approach.
 Adapt the execution strategy to the item type. Common patterns:
 
 **PR reviews** — Invoke `review-pr`. Multiple independent reviews can be
-parallelized if Jacob approves. The concierge parent creates and records the
+parallelized if Cesar approves. The concierge parent creates and records the
 worktree, dispatches the shared skill inside that worktree, and then cleans up
 the worktree afterward. Results are presented for approval before posting.
 
@@ -128,17 +128,17 @@ Unlike PR reviews (which run as autonomous subagents), drive-pr requires
 interactive approval at each step and runs inline. For CI failures, `drive-pr`
 will delegate to `fix-ci` as needed. If the work requires a local checkout, the
 concierge parent sets up a worktree beforehand and cleans it up afterward. All
-code changes and comment replies require Jacob's approval before any visible
+code changes and comment replies require Cesar's approval before any visible
 action.
 
 **Reading docs** — Invoke `read-doc` to fetch the content. Summarize key
-points. Help Jacob formulate feedback or a response.
+points. Help Cesar formulate feedback or a response.
 
 **Composing replies** (Slack, GitHub, etc.) — Draft the reply, present it for
 approval, then post via the appropriate tool.
 
 **Interactive development** — Discuss the approach, plan the implementation,
-write code interactively with Jacob reviewing each step. Cross-check with
+write code interactively with Cesar reviewing each step. Cross-check with
 `consult-codex` at key milestones. This is the most hands-on mode — the
 concierge acts as a pair programming partner.
 
@@ -172,12 +172,12 @@ session.
 #### 3d. Transition to the next item
 
 After completing or deferring an item, present a brief status update and ask
-before starting the next item. Jacob may want to adjust the remaining plan,
+before starting the next item. Cesar may want to adjust the remaining plan,
 take a break, switch to something off-plan, or end the session.
 
 ### 4. Parallelization
 
-When Jacob approves parallel work, launch multiple subagents simultaneously.
+When Cesar approves parallel work, launch multiple subagents simultaneously.
 Good candidates:
 
 - **Multiple PR reviews**: Each in its own parent-managed worktree.
@@ -185,11 +185,11 @@ Good candidates:
   analysis.
 
 Present parallel results as they complete. If one finishes before others,
-present it to Jacob while waiting.
+present it to Cesar while waiting.
 
 ### 5. Session wrap-up
 
-When Jacob wants to end the session or all items are handled:
+When Cesar wants to end the session or all items are handled:
 
 1. Present a session summary: items completed, deferred, still active, and
    any new items discovered during the session.
@@ -209,18 +209,18 @@ When Jacob wants to end the session or all items are handled:
 - Track worktrees. The concierge parent must record worktrees via
   `wl worktree add`, pass the path into the delegated skill, and remove the
   tracking entry after cleanup. Run `wl worktree gc` at session start and end.
-- The plan is a starting point, not a rigid script. Expect Jacob to redirect
+- The plan is a starting point, not a rigid script. Expect Cesar to redirect
   at any time.
 
 ## Constraints
 
-- **Always confirm before acting.** The concierge proposes, Jacob decides.
+- **Always confirm before acting.** The concierge proposes, Cesar decides.
   Never post reviews, push code, send messages, or take any externally
   visible action without explicit approval.
 - **Never merge PRs.** Do not merge PRs and do not propose or suggest
-  merging. Merging is only performed when Jacob explicitly requests it
+  merging. Merging is only performed when Cesar explicitly requests it
   in a separate instruction. The concierge reviews, tracks, and approves
-  — merging is Jacob's decision to initiate.
+  — merging is Cesar's decision to initiate.
 - **All GitHub interaction goes through the `gh` CLI.** All Slack, Linear,
   and Jira interaction goes through their respective MCP servers.
 - **Worklog commits before notification cleanup.** If a commit fails, do not

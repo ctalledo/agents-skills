@@ -1,7 +1,7 @@
 # Check Jira Procedure
 
 This procedure checks Jira for issues assigned to or
-mentioning Jacob. It is run as a forked subagent by the
+mentioning Cesar. It is run as a forked subagent by the
 sitrep and concierge skills.
 
 Jira integration is via the Atlassian MCP server plugin.
@@ -16,7 +16,7 @@ Read the Jira user and projects from `config/sources.yaml`:
 
 ```yaml
 jira:
-  user: jacob.howard
+  user: cesar.talledo
   projects:
     - MCP
 ```
@@ -69,13 +69,13 @@ keys to the scan log before classifying any of them.
 
 ### Step 1: Search for Assigned Issues
 
-Use JQL to find issues assigned to Jacob that have been
+Use JQL to find issues assigned to Cesar that have been
 updated recently:
 
 ```
 mcp__plugin_atlassian_atlassian__searchJiraIssuesUsingJql({
     "cloudId": "<CLOUD_ID>",
-    "jql": "assignee = \"jacob.howard\" AND updated >= \"<CHECKPOINT_DATE>\" ORDER BY updated DESC",
+    "jql": "assignee = \"cesar.talledo\" AND updated >= \"<CHECKPOINT_DATE>\" ORDER BY updated DESC",
     "fields": [
         "summary", "status", "priority",
         "updated", "assignee", "issuetype"
@@ -142,13 +142,13 @@ Record the page in `## Pagination Log`:
 
 ### Step 2: Search for Mentioned Issues
 
-Search for issues where Jacob is mentioned (in comments
+Search for issues where Cesar is mentioned (in comments
 or description) but not necessarily assigned:
 
 ```
 mcp__plugin_atlassian_atlassian__searchJiraIssuesUsingJql({
     "cloudId": "<CLOUD_ID>",
-    "jql": "text ~ \"jacob.howard\" AND updated >= \"<CHECKPOINT_DATE>\" AND assignee != \"jacob.howard\" ORDER BY updated DESC",
+    "jql": "text ~ \"cesar.talledo\" AND updated >= \"<CHECKPOINT_DATE>\" AND assignee != \"cesar.talledo\" ORDER BY updated DESC",
     "fields": [
         "summary", "status", "priority",
         "updated", "assignee", "issuetype"
@@ -218,17 +218,17 @@ issue individually.
 
 #### Action Required
 
-- Issues assigned to Jacob with status changes requiring
+- Issues assigned to Cesar with status changes requiring
   action (e.g., moved to "In Progress", "In Review",
   "Blocked").
-- Issues where Jacob is mentioned in a recent comment
+- Issues where Cesar is mentioned in a recent comment
   asking for input or review.
-- New issues assigned to Jacob since the last check.
-- Blocked issues in Jacob's projects.
+- New issues assigned to Cesar since the last check.
+- Blocked issues in Cesar's projects.
 
 #### Status Update Only
 
-- Issues that have progressed but don't need Jacob's
+- Issues that have progressed but don't need Cesar's
   immediate action.
 - Issues completed by others in monitored projects.
 - FYI comments on watched issues.

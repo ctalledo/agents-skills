@@ -11,7 +11,7 @@ compatibility: >-
 
 # Read Google Doc
 
-Fetch and present the content of a Google Doc. Jacob has read-only access to
+Fetch and present the content of a Google Doc. Cesar has read-only access to
 Google Docs via the `gws` CLI tool.
 
 The command examples below are recommended starting points. Adapt field
@@ -41,7 +41,7 @@ gws docs documents get \
 ```
 
 If the command fails with a 404 or permission error, report the issue to the
-user — it likely means the document is not shared with Jacob's account. Do not
+user — it likely means the document is not shared with Cesar's account. Do not
 retry automatically.
 
 If the response is very large and threatens to overwhelm the context window,
@@ -81,7 +81,7 @@ If you need to explore available response fields:
 gws schema docs.documents.get
 ```
 
-This is useful when Jacob asks for specific metadata (revision history,
+This is useful when Cesar asks for specific metadata (revision history,
 suggested changes, comments, etc.) that is not covered by the default field
 mask.
 
@@ -90,13 +90,13 @@ mask.
 - Prefer the minimal field mask that answers the question. `"title,body"` is
   sufficient for most reads.
 - For very long documents (design docs, RFCs), read the structure first and
-  let Jacob direct which sections to focus on rather than loading everything.
+  let Cesar direct which sections to focus on rather than loading everything.
 - If the document contains inline images or drawings, note their presence but
   do not attempt to render them.
 
 ## Constraints
 
-- Jacob has **read-only** access to Google Docs via `gws`. Do not attempt any
+- Cesar has **read-only** access to Google Docs via `gws`. Do not attempt any
   write operations (creating, editing, or commenting on documents).
 - All `gws` interaction must go through the `gws` CLI. There is no MCP server
   for Google Workspace.

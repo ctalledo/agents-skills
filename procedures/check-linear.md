@@ -1,7 +1,7 @@
 # Check Linear Procedure
 
 This procedure checks Linear for issues assigned to or
-mentioning Jacob. It is run as a forked subagent by the
+mentioning Cesar. It is run as a forked subagent by the
 sitrep and concierge skills.
 
 Linear integration is via the Linear MCP server plugin.
@@ -15,7 +15,7 @@ Read the Linear user from `config/sources.yaml`:
 
 ```yaml
 linear:
-  user: jacob
+  user: ctalledo
 ```
 
 Read the last checkpoint and capture the scan start time:
@@ -50,7 +50,7 @@ IDs to the scan log before classifying any of them.
 ### Step 1: Fetch Assigned Issues
 
 Use the `list_issues` MCP tool to get issues assigned to
-Jacob that have been updated since the last checkpoint:
+Cesar that have been updated since the last checkpoint:
 
 ```
 mcp__plugin_linear_linear__list_issues({
@@ -105,12 +105,12 @@ Record the page in `## Pagination Log`:
 ### Step 2: Check for Mentions
 
 Linear does not have a direct "mentioned" filter in the
-`list_issues` API. To find issues where Jacob is mentioned
+`list_issues` API. To find issues where Cesar is mentioned
 but not assigned, use a keyword search:
 
 ```
 mcp__plugin_linear_linear__list_issues({
-    "query": "jacob",
+    "query": "ctalledo",
     "updatedAt": "<CHECKPOINT_ISO8601>",
     "orderBy": "updatedAt",
     "limit": 20
@@ -170,12 +170,12 @@ mcp__plugin_linear_linear__list_comments({
 
 #### Action Required
 
-- Issues assigned to Jacob with status changes requiring
+- Issues assigned to Cesar with status changes requiring
   action (e.g., moved to "In Progress", "In Review").
-- Issues where Jacob is mentioned in a recent comment
+- Issues where Cesar is mentioned in a recent comment
   asking for input.
-- Blocked issues assigned to Jacob.
-- New issues assigned to Jacob since the last check.
+- Blocked issues assigned to Cesar.
+- New issues assigned to Cesar since the last check.
 
 #### Status Update Only
 

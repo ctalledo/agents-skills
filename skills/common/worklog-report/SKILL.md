@@ -220,7 +220,7 @@ Write the report in Markdown format. Adapt the format
 based on the report type (see templates above).
 
 For **standup** reports, pull activity log entries from
-threads that were active yesterday and today in Jacob's
+threads that were active yesterday and today in Cesar's
 local timezone. Focus on what was done and what's planned.
 
 For **weekly** and **monthly** reports, use thread creation
@@ -277,7 +277,7 @@ such as `git add -A` or `git add .`.
 
 ### Step 7: Present
 
-Display the report to Jacob. For standup reports, also
+Display the report to Cesar. For standup reports, also
 offer to copy it to clipboard or format it for Slack.
 
 ## Cross-Checking with Codex

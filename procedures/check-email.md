@@ -5,7 +5,7 @@ notifications (GitHub notifications and Google Workspace
 notifications). It is run as a forked subagent by the
 sitrep and concierge skills.
 
-Jacob has read/write access to Gmail via the `gws` CLI
+Cesar has read/write access to Gmail via the `gws` CLI
 tool.
 
 The command examples below are recommended starting points.
@@ -262,7 +262,7 @@ Organize findings into categories:
 #### Action Required
 
 - Review request emails from GitHub — but **only** if the
-  review was requested of Jacob directly (per `github.user`
+  review was requested of Cesar directly (per `github.user`
   in `config/sources.yaml`) or of one of the monitored
   team objects under `github.teams` in
   `config/sources.yaml`. GitHub sends review request
@@ -272,13 +272,13 @@ Organize findings into categories:
   review was requested of, defer to the GitHub check for
   classification — do not assume it is actionable.
 - @-mention emails from GitHub.
-- Doc comment emails where Jacob is asked a question or
+- Doc comment emails where Cesar is asked a question or
   assigned an action.
 - Direct share notifications for new docs.
 
 #### Status Update Only
 
-- GitHub notification emails for threads Jacob is
+- GitHub notification emails for threads Cesar is
   subscribed to (no direct action needed).
 - Doc comment notifications that are FYI.
 - CI notification emails.
@@ -337,7 +337,7 @@ Email-specific requirements:
 
 These commands are NOT run by this procedure — they are
 run by the sitrep/concierge after worklog commit and after
-Jacob confirms the cleanup list.
+Cesar confirms the cleanup list.
 
 Cleanup operates on individual Gmail **message IDs** —
 only the specific messages seen during the scan are
