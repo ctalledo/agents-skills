@@ -13,10 +13,10 @@ volume and shape of the data you encounter.
 Read these values from the worklog config:
 
 ```bash
-# GitHub user, orgs, teams, and ignored authors from
+# GitHub user, repos, teams, and ignored authors from
 # config/sources.yaml.
 # github.user
-# github.orgs
+# github.repos
 # github.teams[].org
 # github.teams[].slug
 # github.ignored_authors
@@ -29,12 +29,12 @@ Read these values from the worklog config:
 # thresholds.own_pr_review_overdue_hours
 ```
 
-The `orgs` list scopes **all** notification and search
-queries to repositories under those GitHub organizations.
-This applies to every step in this procedure — not just
-the `/notifications` API call. Filter out any result whose
-repository owner is not in the `orgs` list, regardless of
-which step produced it.
+The `repos` list scopes **all** notification and search
+queries to specific repositories. This applies to every
+step in this procedure — not just the `/notifications`
+API call. Filter out any result whose full repository
+name (`owner/repo`) is not in the `repos` list,
+regardless of which step produced it.
 
 The `ignored_authors` list contains GitHub usernames whose
 activity should not generate worklog threads. When
@@ -81,7 +81,7 @@ to the scan log before classifying any of them.
 
 Use `gh api` to retrieve notifications since the last
 checkpoint. Use `--jq` to extract only the fields needed
-and to filter to monitored orgs, keeping the response
+and to filter to monitored repos, keeping the response
 compact.
 
 ```bash
@@ -100,14 +100,16 @@ gh api /notifications \
         repo: .repository.full_name,
         updated_at: .updated_at
     } | select(
-        .repo | startswith("docker/") or
-                startswith("moby/")
+        .repo == "docker/pinata" or
+        .repo == "docker/sysbox-ee" or
+        .repo == "nestybox/sysbox"
     )]'
 ```
 
-Read the org list from `config/sources.yaml` under
-`github.orgs` and build the `select()` filter dynamically
-— do not hardcode the org names in the jq expression.
+Read the repo list from `config/sources.yaml` under
+`github.repos` and build the `select()` filter
+dynamically using exact `full_name` matches — do not
+hardcode the repo names in the jq expression.
 
 #### Pagination
 
@@ -144,45 +146,45 @@ Record the page in `## Pagination Log`:
 ### Step 2: Fetch Explicit Review Requests
 
 Notifications alone may miss review requests. Supplement
-with targeted PR searches, scoped to the monitored orgs.
+with targeted PR searches, scoped to the monitored repos.
 
 **Important:** Every `gh search prs` call **must** include
-an `--owner=<org>` flag to restrict results to a monitored
-org. Run one search per org in `github.orgs`. The `@me`
-shorthand searches across all orgs the user has access to,
-so without `--owner` it will return PRs from unmonitored
-orgs (e.g., personal forks, upstream open-source projects).
-Always include `--owner`.
+a `--repo=<owner/repo>` flag to restrict results to a
+monitored repository. Run one search per repo in
+`github.repos`. The `@me` shorthand searches across all
+repos the user has access to, so without `--repo` it will
+return PRs from unmonitored repos (e.g., personal forks,
+upstream open-source projects). Always include `--repo`.
 
 ```bash
-# PRs awaiting review from my user (per org).
-# Run this once for each org in github.orgs.
+# PRs awaiting review from my user (per repo).
+# Run this once for each repo in github.repos.
 gh search prs \
     --review-requested=@me \
-    --owner=docker \
+    --repo=docker/pinata \
     --state=open \
     --json number,repository,title,url,updatedAt \
     --limit 50
 
-# PRs awaiting review from my teams (per org).
-# Only run team-scoped searches for the org that
-# owns the team.
+# PRs awaiting review from my teams (per repo).
+# For each repo, only run team-scoped searches for
+# teams whose org matches the repo owner.
 gh search prs \
-    --review-requested=docker/ai-tools-team \
-    --owner=docker \
+    --review-requested=docker/app-runtime \
+    --repo=docker/pinata \
     --state=open \
     --json number,repository,title,url,updatedAt \
     --limit 50
 ```
 
-Read the org list from `config/sources.yaml` under
-`github.orgs` and the team objects from `github.teams` —
-do not hardcode them. Build team-scoped searches as
-`<org>/<slug>`. Only run a team search against the org
-that owns that team object.
+Read the repo list from `config/sources.yaml` under
+`github.repos` and the team objects from `github.teams`
+— do not hardcode them. Build team-scoped searches as
+`<team.org>/<team.slug>`. Only run a team search against
+repos whose owner matches `team.org`.
 
 As a safety net, post-filter results: discard any PR
-whose repository owner is not in the `github.orgs` list.
+whose full repository name is not in `github.repos`.
 
 Append each new PR ref to the scan log as:
 
@@ -232,15 +234,15 @@ classification in Step 4.
 ### Step 3: Check Own PR Status
 
 Look for feedback on PRs authored by the user, scoped to
-the monitored orgs. Run one search per org in
-`github.orgs`. As with Step 2, always include `--owner`
-to prevent results from unmonitored orgs leaking in:
+the monitored repos. Run one search per repo in
+`github.repos`. As with Step 2, always include `--repo`
+to prevent results from unmonitored repos leaking in:
 
 ```bash
-# Run once per org in github.orgs.
+# Run once per repo in github.repos.
 gh search prs \
     --author=@me \
-    --owner=docker \
+    --repo=docker/pinata \
     --state=open \
     --json number,repository,title,url,updatedAt,\
 reviewDecision \
@@ -411,5 +413,5 @@ gh api /notifications/threads/<THREAD_ID> \
   applies the proposed checkpoint afterward.
 - The canonical worklog source ref format is
   `github:<owner>/<repo>#<number>`.
-- Read org, team, and ignored-author lists from
+- Read repo, team, and ignored-author lists from
   `config/sources.yaml` — do not hardcode them.
