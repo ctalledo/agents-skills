@@ -4,17 +4,14 @@ Check all notification sources, correlate findings with
 existing worklog threads, update the worklog, and present
 a situational report.
 
-The worklog repository is at `worklog/` relative to the
-Docker workspace root. The `wl` CLI tool is at
-`worklog/tools/wl`. Procedure documents for each
-notification source are in `.claude/procedures/`. All
-source checks must return the shared structured format
-described in `.claude/procedures/findings-schema.md`.
+The worklog repository is at `${HOME}/work-local/ctalledo/worklog/`.  The `wl`
+CLI tool is at `worklog/tools/wl`. Procedure documents for each notification
+source are in `.claude/procedures/`. All source checks must return the shared
+structured format described in `.claude/procedures/findings-schema.md`.
 
-The command examples and subagent structure below are
-recommended starting points, not a fixed recipe. Adapt the
-parallelization, batching, and query strategies to the
-volume and shape of the data you encounter.
+The command examples and subagent structure below are recommended starting
+points, not a fixed recipe. Adapt the parallelization, batching, and query
+strategies to the volume and shape of the data you encounter.
 
 ## 1. Pick up the current state
 
