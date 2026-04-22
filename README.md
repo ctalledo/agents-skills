@@ -7,6 +7,10 @@ It is designed to distribute and track revisions to the tools. It offers an
 `install.sh` script that, once the repository is cloned, provides automatic
 installation via symlinking into user-level agent configuration directories.
 
+## Prerequisites
+
+Tools: `claude`, `jq`, `yq`, `gh`
+
 ## General Setup
 
 Many skills in this repository require that the `gh` CLI tool be installed and
@@ -85,11 +89,17 @@ repository in `~/.claude/settings.json`:
 {
     "permissions": {
         "allow": [
-            "Skill(review-plan-as-ceo)",
-            "Skill(review-plan-as-em)",
-            "Skill(drive-pr)",
-            "Skill(fix-ci)",
-            "Skill(review-pr)"
+        "Skill(review-plan-as-ceo)",
+        "Skill(review-plan-as-em)",
+        "Skill(drive-pr)",
+        "Skill(fix-ci)",
+        "Skill(review-pr)",
+        "Skill(concierge)",
+        "Skill(explain-code)",
+        "Skill(open-browser)",
+        "Skill(read-doc)",
+        "Skill(sitrep)",
+        "Skill(working-report)"
         ]
     }
 }
