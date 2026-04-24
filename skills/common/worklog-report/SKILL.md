@@ -15,8 +15,14 @@ compatibility: >-
 Generate a structured report from the worklog repository, covering work threads
 completed and in progress over a specified time period.
 
-The worklog repository is at `worklog/` relative to the Docker workspace root.
-The `wl` CLI tool is at `worklog/tools/wl`.
+The worklog repository is at `worklog/` relative to the
+directory where Claude was invoked. The `wl` CLI tool is at `$WORKLOG_PATH/tools/wl`, where
+`$WORKLOG_PATH` is an environment variable. At the start,
+resolve it once by running `printenv WORKLOG_PATH`. If the
+output is empty, stop immediately and report:
+"Error: WORKLOG_PATH is not set." Use the resolved absolute
+path for all subsequent `wl` invocations — never
+re-expand `$WORKLOG_PATH` inline in commands.
 
 The report formats below are recommended templates, not rigid structures. Adapt
 the level of detail and grouping to the report type and audience.

@@ -4,10 +4,17 @@ Check all notification sources, correlate findings with
 existing worklog threads, update the worklog, and present
 a situational report.
 
-The worklog repository is at `${HOME}/work-local/ctalledo/worklog/`.  The `wl`
-CLI tool is at `worklog/tools/wl`. Procedure documents for each notification
-source are in `.claude/procedures/`. All source checks must return the shared
-structured format described in `.claude/procedures/findings-schema.md`.
+The worklog repository is at `${HOME}/work-local/ctalledo/worklog/`. The `wl` CLI tool is at `$WORKLOG_PATH/tools/wl`, where `$WORKLOG_PATH`
+is an environment variable. At the start of every session, resolve it
+once by running `printenv WORKLOG_PATH`. If the output is empty,
+stop immediately and report: "Error: WORKLOG_PATH is not set." Use the
+resolved absolute path (e.g. `/home/user/worklog/tools/wl`) for all
+subsequent `wl` invocations — never re-expand `$WORKLOG_PATH` inline
+in commands. Procedure documents
+for each notification source are in `~/.claude-procedures/`. All source checks
+must return the shared structured format described in
+`~/.claude-procedures/findings-schema.md`. Don't ask permission to read or
+execute any of these.
 
 The command examples and subagent structure below are recommended starting
 points, not a fixed recipe. Adapt the parallelization, batching, and query
@@ -24,9 +31,9 @@ wl scan prune
 wl summary commits --since "2 days ago" --oneline
 ```
 
-If `wl` is not found, verify the tool path. If the worklog
-repository is missing or uninitialized, report the problem
-and stop.
+If `WORKLOG_PATH` was not set (detected at session start) or the `wl`
+binary is not found at the resolved path, report the problem and stop. If the worklog repository is missing or
+uninitialized, report the problem and stop.
 
 Check for uncommitted worklog changes from an interrupted
 session:
@@ -49,7 +56,7 @@ activity before proceeding.
 
 Launch forked subagents to check each notification source.
 Each subagent follows the corresponding procedure document
-in `.claude/procedures/` and returns structured findings.
+in `~/.claude-procedures/` and returns structured findings.
 
 These source-check subagents are **read-only**. They may
 read worklog state and query external systems, but they must

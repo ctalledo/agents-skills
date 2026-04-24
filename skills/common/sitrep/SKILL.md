@@ -18,7 +18,7 @@ sitrep) in the procedure below and display the current
 worklog state without checking notification sources.
 
 Follow the full sitrep procedure in
-`.claude/procedures/sitrep.md`.
+`~/.claude-procedures/sitrep.md`.
 
 ## Target
 

@@ -98,13 +98,13 @@ if [ -d "${HOME}/.claude" ]; then
     # Register procedures.
     procedures_src="${script_dir}/procedures"
     if [ -d "$procedures_src" ]; then
-        mkdir -p "${HOME}/.claude/procedures"
+        mkdir -p "${HOME}/.claude-procedures"
         for procedure_md in "${procedures_src}"/*.md; do
             [ -f "$procedure_md" ] || continue
             procedure_name=$(basename "$procedure_md")
             install_link \
                 "$procedure_md" \
-                "${HOME}/.claude/procedures/${procedure_name}" \
+                "${HOME}/.claude-procedures/${procedure_name}" \
                 "procedure: ${procedure_name}"
         done
     fi

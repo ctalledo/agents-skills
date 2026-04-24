@@ -11,9 +11,16 @@ checkpoints, and worktrees in Cesar's worklog repository
 using the `wl` CLI tool. This procedure is used by the
 sitrep and concierge skills.
 
-The `wl` tool is at `worklog/tools/wl` relative to the
-Docker workspace root. The worklog repository is at
-`worklog/`.
+The `wl` tool is at `$WORKLOG_PATH/tools/wl`, where
+`$WORKLOG_PATH` is an environment variable. At the start of
+every session, resolve it once by running
+`printenv WORKLOG_PATH`. If the output is empty, stop
+immediately and report: "Error: WORKLOG_PATH is not set."
+Use the resolved absolute path for all subsequent `wl`
+invocations — never re-expand `$WORKLOG_PATH` inline in
+commands. The worklog repository is at
+`worklog/` relative to the directory where Claude was
+invoked.
 
 ## Core Invariants
 

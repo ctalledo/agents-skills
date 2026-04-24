@@ -18,11 +18,18 @@ Cesar's daily workflow orchestrator. Checks notification sources, correlates
 findings into the worklog, presents a situational report, and then
 interactively works through action items.
 
-The worklog repository is at `worklog/` relative to the Docker workspace root.
-The `wl` CLI tool is at `worklog/tools/wl`. Procedure documents for source
-checks are in `.claude/procedures/`. Source-check subagents
-must use the shared findings schema and remain read-only; the concierge parent
-agent is the single writer.
+The worklog repository is at `worklog/` relative to the
+directory where Claude was invoked. The `wl` CLI tool is at `$WORKLOG_PATH/tools/wl`, where
+`$WORKLOG_PATH` is an environment variable. At the start,
+resolve it once by running `printenv WORKLOG_PATH`. If the
+output is empty, stop immediately and report:
+"Error: WORKLOG_PATH is not set." Use the resolved absolute
+path for all subsequent `wl` invocations — never
+re-expand `$WORKLOG_PATH` inline in commands.
+Procedure documents for source checks are in
+`~/.claude-procedures/`. Source-check subagents must use the
+shared findings schema and remain read-only; the concierge
+parent agent is the single writer.
 
 Available skills for dispatching work:
 - `review-pr` — Review a PR.
@@ -54,7 +61,7 @@ state. Use this when:
 
 ### 1. Sitrep
 
-Run the full sitrep procedure in `.claude/procedures/sitrep.md`. This includes
+Run the full sitrep procedure in `~/.claude-procedures/sitrep.md`. This includes
 checking all notification sources, correlating findings, proposing worklog
 changes for approval, committing, cleaning up notifications, and presenting
 the situational report.

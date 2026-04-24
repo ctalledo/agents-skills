@@ -192,6 +192,44 @@ Append each new PR ref to the scan log as:
 - [ ] `pr:<OWNER>/<REPO>#<NUMBER>` — <TITLE> (review-requested) — (pending)
 ```
 
+### Step 3: Fetch @-Mention PRs
+
+Notifications and review-request searches may miss PRs where the
+user is @-mentioned in the description or comments without a formal
+review request. Supplement with a mention search, scoped to the
+monitored repos.
+
+**Important:** As with Step 2, every `gh search prs` call **must**
+include a `--repo=<owner/repo>` flag. Run one search per repo in
+`github.repos`.
+
+```bash
+gh search prs \
+    --mentions=<github.user> \
+    --repo=docker/pinata \
+    --state=open \
+    --json number,repository,title,url,updatedAt,author \
+    --limit 50
+```
+
+Post-filter results:
+
+- Discard any PR whose full repository name is not in
+  `github.repos`.
+- Discard PRs with `updatedAt` before the checkpoint — old
+  mentions with no new activity since the last check are not
+  actionable.
+- Discard PRs already enumerated in Steps 1 or 2 to avoid
+  duplicates.
+- Discard PRs authored by `<github.user>` — own PRs are covered
+  separately in Phase 2 Step 3.
+
+Append each new PR ref to the scan log as:
+
+```
+- [ ] `pr:<OWNER>/<REPO>#<NUMBER>` — <TITLE> (mention-only) — (pending)
+```
+
 After all enumeration is complete, update the scan log
 frontmatter:
 
@@ -218,14 +256,15 @@ gh pr view <number> -R <repo> \
     --jq '{isDraft, state}'
 ```
 
-- If `isDraft` is `true`, discard the finding. Draft PRs
-  are not ready for review. Do not include them in Action
-  Required findings or suggest creating worklog threads.
-- If `state` is `MERGED` or `CLOSED`, classify the finding
-  as **Completed / Resolved** (not Action Required). If
-  there is an existing worklog thread for the PR, include
-  it in the completed findings so the caller can propose
-  closing it.
+- If `isDraft` is `true`, discard the finding, unless my Github user ID is
+  explicitly mentioned in the PR's description or comments. Draft PRs are not
+  ready for review. Do not include them in Action Required findings or suggest
+  creating worklog threads.
+
+- If `state` is `MERGED` or `CLOSED`, classify the finding as **Completed /
+  Resolved** (not Action Required). If there is an existing worklog thread for
+  the PR, include it in the completed findings so the caller can propose closing
+  it.
 
 Only PRs that are **open and not draft** proceed to the
 review checks in Step 3b and the Action Required
