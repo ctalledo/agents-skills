@@ -318,10 +318,23 @@ Organize the report with these sections:
 
 - **Summary**: counts of active threads,
   new/updated/completed this check.
-- **Action items (by priority)**: grouped into Critical,
-  High, Medium, Low. Each item shows thread ID, type,
-  title, and bare source link(s).
-- **Status updates**: FYI items that do not require action.
+- **GitHub PRs**: present all GitHub findings as a
+  Markdown table with columns: PR, Title, Outcome, Notes,
+  Pending Action. Include every PR inspected, regardless
+  of classification (active, completed, ignored). Sort by
+  descending priority: active threads first, then
+  completed, then ignored. Use "None" in Pending Action
+  for items that require no follow-up.
+- **Slack messages**: present all Slack findings (across
+  all tiers and DMs) as a single Markdown table with
+  columns: Channel, Priority, Description, Pending Action.
+  Include every channel that was checked, even quiet ones
+  (mark them "Quiet — no messages"). Sort rows by
+  descending priority (high → medium → low), with DMs
+  first regardless of priority. Use "—" in Pending Action
+  for items that require no follow-up.
+- **Status updates**: FYI items from non-Slack sources
+  that do not require action.
 - **Completed**: threads closed this check.
 - **Suggested plan of action**: a prioritized, ordered
   recommendation of what to work on. The plan is a
