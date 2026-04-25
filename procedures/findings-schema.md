@@ -20,7 +20,7 @@ Return a single fenced YAML block matching this shape:
 
 ```yaml
 source: slack                # github | email | slack |
-                             #   linear | jira
+                             #   linear | jira | notion
 status: ok                   # ok | partial | failed
 scan_started_at: 2026-03-13T23:00:00Z
 scan_log_path: "sitreps/scans/2026-03-13T230000Z-slack.md"

@@ -94,6 +94,7 @@ possible):
    across the tier-scoped subagents.
 8. **Linear** — follow `check-linear.md`. Uses Linear MCP.
 9. **Jira** — follow `check-jira.md`. Uses Atlassian MCP.
+10. **Notion** — follow `check-notion.md`. Uses Notion MCP.
 
 If a subagent fails, log the failure and continue with the
 remaining sources. Report the failure in the final sitrep so
