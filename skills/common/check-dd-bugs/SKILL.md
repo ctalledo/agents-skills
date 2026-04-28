@@ -28,24 +28,35 @@ cutoff=$(date -v-4m +%Y-%m-%dT00:00:00Z 2>/dev/null \
 
 ### 2. Fetch open issues from both repos
 
+Compute a secondary cutoff for the stale-silent filter: 2 months ago.
+
+```bash
+stale=$(date -v-2m +%Y-%m-%dT00:00:00Z 2>/dev/null \
+  || date -d '2 months ago' +%Y-%m-%dT00:00:00Z)
+```
+
 Run both commands in parallel. Each command returns a JSON array of
 objects with `repo`, `number`, `title`, `createdAt`, and `comments`
-(the comment count, not the comment objects):
+(the comment count, not the comment objects). Exclude issues that have
+zero comments **and** were opened more than 2 months ago — they are
+stale with no engagement and would only add noise.
 
 ```bash
 gh issue list -R docker/for-mac --state open \
   --json number,title,createdAt,comments --limit 200 \
-  | jq --arg cutoff "$cutoff" \
+  | jq --arg cutoff "$cutoff" --arg stale "$stale" \
     '[.[] | select(.createdAt >= $cutoff)
       | {repo: "for-mac", number, title, createdAt,
-         comments: (.comments | length)}]'
+         comments: (.comments | length)}
+      | select(.comments > 0 or .createdAt >= $stale)]'
 
 gh issue list -R docker/for-win --state open \
   --json number,title,createdAt,comments --limit 200 \
-  | jq --arg cutoff "$cutoff" \
+  | jq --arg cutoff "$cutoff" --arg stale "$stale" \
     '[.[] | select(.createdAt >= $cutoff)
       | {repo: "for-win", number, title, createdAt,
-         comments: (.comments | length)}]'
+         comments: (.comments | length)}
+      | select(.comments > 0 or .createdAt >= $stale)]'
 ```
 
 Merge both arrays into a single list.
@@ -92,8 +103,9 @@ Present the result as a single Markdown table with these columns:
 - If either `gh issue list` call fails (e.g. auth or rate limit),
   report the error and present results from the remaining repo rather
   than aborting entirely.
-- The 4-month window keeps the list manageable; most older open issues
-  have stalled and are unlikely to need immediate attention.
+- The 4-month fetch window combined with the stale-silent filter (drop
+  zero-comment issues older than 2 months) keeps the list focused on
+  issues that have either recent activity or recent filing.
 
 ## Constraints
 
