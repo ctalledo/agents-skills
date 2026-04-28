@@ -326,6 +326,35 @@ Organize the report with these sections:
   descending priority: active threads first, then
   completed, then ignored. Use "None" in Pending Action
   for items that require no follow-up.
+- **Jira**: present Jira findings as two separate Markdown
+  tables. Only include active (non-resolved) issues in
+  both tables. If a table has no rows, write "None."
+
+  **Table 1 — Assigned to me**: issues where
+  `kind != potential-work`. Columns: Issue, Priority,
+  Status, Opened, Updated, Summary. Sort by priority
+  descending (P1 → P2 → P3 → unset), then by Updated
+  descending.
+
+  **Table 2 — Potential work**: issues where
+  `kind: potential-work` (manager-assigned or unassigned
+  bugs from `help_projects`). Columns: Issue, Priority,
+  Status, Assignee, Opened, Updated, Summary. Sort by
+  explicit priority first (P1 → P2 → P3), then unset-
+  priority items by Updated descending.
+
+  In the Issue column of each row, place the bare Jira URL
+  so that terminals auto-detect it as a clickable link:
+  `https://docker.atlassian.net/browse/<ISSUE_KEY>`.
+  Put the issue key as the visible cell text with the URL
+  on the same line, e.g.:
+  `[POS-2260](https://docker.atlassian.net/browse/POS-2260)`
+
+  For both tables, render Opened and Updated as
+  human-readable relative times computed from the sitrep
+  run date: "today", "yesterday", "3 days ago",
+  "last week", "2 weeks ago", "3 weeks ago",
+  "about a month ago", "N weeks ago", etc.
 - **Slack messages**: present all Slack findings (across
   all tiers and DMs) as a single Markdown table with
   columns: Channel, Priority, Description, Pending Action.

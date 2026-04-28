@@ -17,8 +17,15 @@ Read the Jira user and projects from `config/sources.yaml`:
 ```yaml
 jira:
   user: cesar.talledo
+  manager:
+    account_id: "<account-id>"
   projects:
-    - MCP
+    - ART
+    - DDB
+  help_projects:
+    - ART
+    - DDB
+    - SEG
 ```
 
 Read the last checkpoint and capture the scan start time:
@@ -69,16 +76,19 @@ keys to the scan log before classifying any of them.
 
 ### Step 1: Search for Assigned Issues
 
-Use JQL to find issues assigned to Cesar that have been
-updated recently:
+Fetch **all open issues** assigned to Cesar, regardless of
+when they were last updated. Do not apply a checkpoint
+filter here — long-standing assigned issues that haven't
+changed recently are still active work and must appear in
+the report.
 
 ```
 mcp__plugin_atlassian_atlassian__searchJiraIssuesUsingJql({
     "cloudId": "<CLOUD_ID>",
-    "jql": "assignee = \"cesar.talledo\" AND updated >= \"<CHECKPOINT_DATE>\" ORDER BY updated DESC",
+    "jql": "assignee = \"<ACCOUNT_ID>\" AND statusCategory != Done ORDER BY updated DESC",
     "fields": [
         "summary", "status", "priority",
-        "updated", "assignee", "issuetype"
+        "created", "updated", "assignee", "issuetype"
     ],
     "maxResults": 50,
     "responseContentFormat": "markdown"
@@ -87,8 +97,9 @@ mcp__plugin_atlassian_atlassian__searchJiraIssuesUsingJql({
 
 Key parameters:
 - **`cloudId`**: From Step 0.
-- **`jql`**: JQL query string. Use the username from
-  `config/sources.yaml` under `jira.user`.
+- **`jql`**: JQL query string. Use the account ID from
+  `config/sources.yaml` under `jira.account_id`. Jira
+  Cloud does not accept usernames in `assignee=` filters.
 - **`fields`**: Request only the fields needed to classify
   the issue. Omit `description` for the initial scan to
   keep responses small.
@@ -96,9 +107,9 @@ Key parameters:
 - **`responseContentFormat`**: Use `"markdown"` for
   readable output.
 
-The checkpoint date in JQL uses the format `YYYY-MM-DD`
-or `YYYY-MM-DD HH:mm` — not ISO 8601. Convert the
-checkpoint timestamp accordingly with:
+The checkpoint is still used in Step 2 (mentions and
+project activity scans) where a full rescan would be too
+noisy. Convert it with:
 
 ```bash
 checkpoint_jql="$(wl util iso-to-jql "$checkpoint")"
@@ -116,7 +127,7 @@ mcp__plugin_atlassian_atlassian__searchJiraIssuesUsingJql({
     "jql": "<SAME_JQL>",
     "fields": [
         "summary", "status", "priority",
-        "updated", "assignee", "issuetype"
+        "created", "updated", "assignee", "issuetype"
     ],
     "maxResults": 50,
     "nextPageToken": "<TOKEN_FROM_PREVIOUS_RESPONSE>",
@@ -140,6 +151,44 @@ Record the page in `## Pagination Log`:
 - Page N: M issues (token: <TOKEN>).
 ```
 
+### Step 1b: Fetch Manager-Assigned and Unassigned Bugs
+
+For each project in `jira.help_projects`, fetch all open
+bugs assigned to the manager or unassigned. These represent
+work Cesar can potentially help with and are listed at lower
+priority than issues assigned directly to Cesar.
+
+Unlike the checkpoint-filtered queries in Steps 1 and 2,
+this query is not scoped by checkpoint — we always want the
+full picture of available work regardless of when items were
+last updated.
+
+```
+mcp__plugin_atlassian_atlassian__searchJiraIssuesUsingJql({
+    "cloudId": "<CLOUD_ID>",
+    "jql": "project in (ART, DDB) AND issuetype = Bug AND statusCategory != Done AND (assignee = \"<MANAGER_ACCOUNT_ID>\" OR assignee is EMPTY) ORDER BY priority ASC, updated DESC",
+    "fields": [
+        "summary", "status", "priority",
+        "updated", "created", "assignee", "issuetype"
+    ],
+    "maxResults": 50,
+    "responseContentFormat": "markdown"
+})
+```
+
+Read the project list from `jira.help_projects` and the
+manager account ID from `jira.manager.account_id` in
+`config/sources.yaml`. Build the `project in (...)` list
+dynamically — do not hardcode project keys.
+
+Apply the same pagination logic as Step 1. Append each new
+issue key to the scan log (skip duplicates already added in
+Step 1), tagged as `(help-candidate)`:
+
+```
+- [ ] `jira:<KEY>` — <SUMMARY> — (help-candidate)
+```
+
 ### Step 2: Search for Mentioned Issues
 
 Search for issues where Cesar is mentioned (in comments
@@ -148,7 +197,7 @@ or description) but not necessarily assigned:
 ```
 mcp__plugin_atlassian_atlassian__searchJiraIssuesUsingJql({
     "cloudId": "<CLOUD_ID>",
-    "jql": "text ~ \"cesar.talledo\" AND updated >= \"<CHECKPOINT_DATE>\" AND assignee != \"cesar.talledo\" ORDER BY updated DESC",
+    "jql": "text ~ \"cesar.talledo\" AND updated >= \"<CHECKPOINT_DATE>\" AND assignee != \"<ACCOUNT_ID>\" ORDER BY updated DESC",
     "fields": [
         "summary", "status", "priority",
         "updated", "assignee", "issuetype"
@@ -164,7 +213,7 @@ activity:
 ```
 mcp__plugin_atlassian_atlassian__searchJiraIssuesUsingJql({
     "cloudId": "<CLOUD_ID>",
-    "jql": "project = MCP AND updated >= \"<CHECKPOINT_DATE>\" AND status changed ORDER BY updated DESC",
+    "jql": "project in (ART, DDB) AND updated >= \"<CHECKPOINT_DATE>\" AND status changed ORDER BY updated DESC",
     "fields": [
         "summary", "status", "priority",
         "updated", "assignee", "issuetype"
@@ -239,10 +288,38 @@ issue individually.
   the last check. These may correspond to worklog threads
   that should be completed.
 
+#### Potential Work
+
+Issues tagged `(help-candidate)` from Step 1b that are:
+- Open and not already assigned to Cesar.
+- Assigned to the manager or unassigned.
+- In the `help_projects` list.
+
+Classify these as `**potential-work**` in the scan log.
+Include them in `action_required` findings with
+`priority_hint: low` and `kind: potential-work`. List
+them after all directly-assigned issues in the findings
+so the sitrep can present them as a lower-priority section.
+
+For every `action_required` Jira finding (both assigned
+and potential-work), include `created` and `updated` ISO
+timestamps in `metadata` so the sitrep can render them as
+human-readable relative times:
+
+```yaml
+metadata:
+  project: DDB
+  status: New
+  priority: P1
+  assignee: UNASSIGNED
+  created: "2026-03-17T00:00:00Z"
+  updated: "2026-03-26T00:00:00Z"
+```
+
 After classifying each batch, update the scan log items
 from `- [ ]` to `- [x]` with the appropriate label
 (`**action-required**`, `**status-update**`,
-`**completed**`, `**ignored**`).
+`**completed**`, `**ignored**`, `**potential-work**`).
 
 After all items are classified, update the scan log
 frontmatter:
