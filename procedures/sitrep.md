@@ -363,6 +363,15 @@ Organize the report with these sections:
   descending priority (high → medium → low), with DMs
   first regardless of priority. Use "—" in Pending Action
   for items that require no follow-up.
+- **Notion**: present all Notion findings as a single
+  Markdown table with columns: #, Title, Type
+  (Action/FYI), Priority, Notes, Link. Keep Notes to one
+  line. Omit any column that would be entirely blank (e.g.
+  drop Priority if no rows have a priority set). Use plain
+  text in the Title cell — never embed the URL there. Put
+  the bare Notion page URL in the Link column. If the
+  Notion check was skipped or failed, write "Skipped" or
+  "Failed — [reason]."
 - **Status updates**: FYI items from non-Slack sources
   that do not require action.
 - **Completed**: threads closed this check.

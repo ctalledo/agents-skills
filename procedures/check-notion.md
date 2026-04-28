@@ -185,9 +185,15 @@ search snippet alone.
 #### Action Required
 
 - Pages that assign action items or tasks to Cesar.
-- Decision documents asking for Cesar's input or approval.
-- Meeting notes where Cesar is mentioned in the context
-  of an action item or follow-up.
+- Decision documents or design docs where Cesar is
+  explicitly listed as a reviewer — his name ("Cesar",
+  "Cesar Talledo") or username ("ctalledo") must appear
+  in the Reviewers field or be called out directly in the
+  page body. Do NOT infer review responsibility from
+  topic relevance alone (e.g. a doc touching a repo Cesar
+  works in does not make him a reviewer).
+- Meeting notes where Cesar is mentioned by name in the
+  context of an action item or follow-up.
 - New announcements or policy changes affecting Cesar's
   team that require a response.
 
