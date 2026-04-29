@@ -2,8 +2,8 @@
 name: check-dd-issues
 description: >-
   Fetch open Docker Desktop bugs from docker/for-mac and docker/for-win opened
-  in the last 4 months and present them as a single table sorted by activity
-  (comment count descending, then most recent comment first).
+  in the last 4 months and present them as a single table sorted by impact
+  (unique commenters descending, then comment count, then most recent comment).
 compatibility: >-
   Requires gh (GitHub CLI) authenticated with repo scope.
 ---
@@ -61,35 +61,44 @@ gh issue list -R docker/for-win --state open \
 
 Merge both arrays into a single list.
 
-### 3. Fetch last comment date for issues with comments
+### 3. Fetch last comment date and unique commenter count for issues with comments
 
-For each issue where `comments > 0`, fetch the date of the most recent
-comment. Use `per_page=100` (sufficient for bug reports of this age):
+For each issue where `comments > 0`, fetch all comments and extract
+both the date of the most recent comment and the number of distinct
+commenters. Use `per_page=100` (sufficient for bug reports of this age):
 
 ```bash
 gh api \
   "repos/docker/<repo>/issues/<number>/comments?per_page=100" \
-  --jq '.[-1].created_at'
+  --jq '{lastCommentAt: .[-1].created_at,
+         uniqueCommenters: ([.[].user.login] | unique | length)}'
 ```
 
 Run these fetches in parallel where possible. For issues with
-`comments == 0`, set `lastCommentAt` to `null`.
+`comments == 0`, set `lastCommentAt` to `null` and `uniqueCommenters`
+to `0`.
+
+When rendering relative dates, validate that the value matches
+`YYYY-MM-DD` before calling `date`; treat missing or malformed values
+as `null` and render them as `—`.
 
 ### 4. Sort and present
 
 Sort the merged list by:
-1. `comments` descending (most comments first).
-2. `lastCommentAt` descending (most recent comment first) — issues with
+1. `uniqueCommenters` descending (broadest user impact first).
+2. `comments` descending (most comments first).
+3. `lastCommentAt` descending (most recent comment first) — issues with
    no comments sort after all commented issues.
-3. `createdAt` descending as a tiebreaker.
+4. `createdAt` descending as a tiebreaker.
 
 Present the result as a single Markdown table with these columns:
 
-| Issue | Comments | Opened | Last Comment | Title |
+| Issue | Commenters | Comments | Opened | Last Comment | Title |
 
 - **Issue**: a Markdown link using the issue number as the label and
   `https://github.com/docker/<repo>/issues/<number>` as the URL, e.g.
   `[for-mac#7849](https://github.com/docker/for-mac/issues/7849)`.
+- **Commenters**: the number of distinct users who commented.
 - **Comments**: the integer comment count.
 - **Opened**: human-readable relative date (e.g. "today", "yesterday",
   "3 days ago", "2 weeks ago", "last month", "2 months ago").
