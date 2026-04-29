@@ -1,5 +1,5 @@
 ---
-name: check-dd-bugs
+name: check-dd-issues
 description: >-
   Fetch open Docker Desktop bugs from docker/for-mac and docker/for-win opened
   in the last 4 months and present them as a single table sorted by activity
@@ -8,7 +8,7 @@ compatibility: >-
   Requires gh (GitHub CLI) authenticated with repo scope.
 ---
 
-# Check Docker Desktop Bugs
+# Check Docker Desktop Issues
 
 Fetch open issues from `docker/for-mac` and `docker/for-win` opened in
 the last 4 months and display them as a single merged table, most active
